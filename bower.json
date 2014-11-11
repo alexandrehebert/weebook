@@ -1,0 +1,28 @@
+{
+  "name": "weebook",
+  "version": "1.0.0",
+  "homepage": "https://github.com/alexandrehebert/weebook",
+  "authors": [
+    "Alexandre HEBERT <ahebert@xebia.fr>"
+  ],
+  "description": "Collaborative writing",
+  "moduleType": [],
+  "keywords": [
+    "writing"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.3.2",
+    "lodash": "~2.4.1"
+  },
+  "resolutions": {
+    "angular": "1.3.2"
+  }
+}

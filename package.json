@@ -1,0 +1,41 @@
+{
+  "name": "weebook",
+  "version": "1.0.0",
+  "description": "Collaborative writing",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://alexandrehebert@github.com/alexandrehebert/weebook.git"
+  },
+  "keywords": [
+    "writing"
+  ],
+  "author": "Alexandre HEBERT",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/alexandrehebert/weebook/issues"
+  },
+  "homepage": "https://github.com/alexandrehebert/weebook",
+  "devDependencies": {
+    "bower": "^1.3.12",
+    "browser-sync": "^1.6.5",
+    "coffee-gulp": "0.0.2",
+    "coffee-script": "^1.8.0",
+    "gulp": "^3.8.10",
+    "gulp-clean": "^0.3.1",
+    "gulp-filter": "^1.0.2",
+    "gulp-load-plugins": "^0.7.1",
+    "gulp-ng-config": "^0.1.7",
+    "gulp-rename": "^1.2.0",
+    "gulp-util": "^3.0.1",
+    "main-bower-files": "^2.4.0",
+    "require-dir": "^0.1.0",
+    "run-sequence": "^1.0.1"
+  },
+  "dependencies": {
+    "gulp-changed": "^1.0.0",
+    "gulp-concat": "^2.4.1"
+  }
+}
