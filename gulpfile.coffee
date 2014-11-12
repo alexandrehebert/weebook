@@ -5,6 +5,7 @@ gulp = require 'gulp'
 $ = do require 'gulp-load-plugins'
 
 gutil = require 'gulp-util'
+rm = require 'del'
 concat = require 'gulp-concat'
 sequence = require 'run-sequence'
 json2ng = require 'gulp-ng-config'
@@ -33,9 +34,8 @@ gulp.task 'build-vendors', [], ->
   .pipe $.concat 'vendors.js'
   .pipe gulp.dest 'build/libs'
 
-gulp.task 'clean', ->
-  gulp.src ['build', 'tmp'], read:false
-  .pipe do $.clean
+gulp.task 'clean', (cb) ->
+  rm ['.tmp', 'dist'], cb
 
 gulp.task 'build', ['clean'], (cb) ->
   sequence ['build-conf', 'build-statics', 'build-vendors'], cb
