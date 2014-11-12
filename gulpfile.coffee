@@ -5,6 +5,7 @@ gulp = require 'gulp'
 from = gulp.src
 to = gulp.dest
 $ = do require 'gulp-load-plugins'
+$.if = require 'gulp-if-else'
 
 gutil = require 'gulp-util'
 rm = require 'del'
@@ -20,8 +21,9 @@ reload = browserSync.reload
 
 # global variables
 env = if gutil.env.mode then gutil.env.mode else 'development'
+compressed = env == 'production'
 
-gulp.task 'compile-sass', ->
+gulp.task 'compile-sass', [], ->
   from 'src/main/web/**/*.scss'
   .pipe do css.fromSASS
   .pipe to 'build'
@@ -35,6 +37,7 @@ gulp.task 'build-vendors', [], ->
   from do bowerFiles
   .pipe $.filter '**/*.js'
   .pipe $.concat 'vendors.js'
+  .pipe $.if compressed, $.uglify
   .pipe to 'build/libs'
 
 # -- TODO uglify / concat / minify / obfuscate
