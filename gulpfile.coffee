@@ -26,6 +26,9 @@ compressed = env == 'production'
 gulp.task 'compile-sass', [], ->
   from 'src/main/web/**/*.scss'
   .pipe do css.fromSASS
+  .pipe $.concat 'styles.css'
+  .pipe $.if compressed, css.minify
+  .pipe $.size title:'styles'
   .pipe to 'build'
   .pipe reload stream:true
 
@@ -38,6 +41,7 @@ gulp.task 'build-vendors', [], ->
   .pipe $.filter '**/*.js'
   .pipe $.concat 'vendors.js'
   .pipe $.if compressed, $.uglify
+  .pipe $.size title:'vendors'
   .pipe to 'build/libs'
 
 # -- TODO uglify / concat / minify / obfuscate
@@ -49,7 +53,7 @@ gulp.task 'build-ng-conf', [], ->
 # --
 gulp.task 'build-ng-templates', [], ->
   from 'src/main/web/**/*.html'
-  .pipe ng.templates {filename:'app-templates.js', module:'app.templates', standalone:true}
+  .pipe ng.templates filename:'app-templates.js', module:'app.templates', standalone:true
   .pipe to 'build'
 # --
 gulp.task 'build-ng-app', [], ->
