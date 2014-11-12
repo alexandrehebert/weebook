@@ -44,23 +44,28 @@ gulp.task 'build-vendors', [], ->
   .pipe $.size title:'vendors'
   .pipe to 'build/libs'
 
-# -- TODO uglify / concat / minify / obfuscate
 gulp.task 'build-ng-conf', [], ->
   from ['src/main/conf/' + env + '.json']
   .pipe ng.configuration 'app.conf'
   .pipe $.rename basename:'conf'
+  .pipe $.size title:'ng-conf'
   .pipe to 'build'
-# --
+
 gulp.task 'build-ng-templates', [], ->
   from 'src/main/web/**/*.html'
-  .pipe ng.templates filename:'app-templates.js', module:'app.templates', standalone:true
+  .pipe ng.templates filename:'templates.js', module:'app.templates', standalone:true
+  .pipe $.if compressed, $.uglify
+  .pipe $.size title:'ng-templates'
   .pipe to 'build'
-# --
+
 gulp.task 'build-ng-app', [], ->
   from 'src/main/web/**/*.js'
   .pipe do ng.annotate
+  .pipe $.concat 'app.js'
+  .pipe $.if compressed, $.uglify
+  .pipe $.if compressed, $.obfuscate
+  .pipe $.size title:'ng-app'
   .pipe to 'build'
-# -- ENDTODO
 
 gulp.task 'clean', (cb) ->
   rm ['.tmp', 'dist'], cb
