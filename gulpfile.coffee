@@ -7,7 +7,6 @@ to = gulp.dest
 $ = do require 'gulp-load-plugins'
 $.if = require 'gulp-if-else'
 
-gutil = require 'gulp-util'
 rm = require 'del'
 sequence = require 'run-sequence'
 css = minify:(require 'gulp-minify-css'), fromSASS:(require 'gulp-sass')
@@ -20,7 +19,7 @@ reload = browserSync.reload
 (require 'require-dir') './gulp';
 
 # global variables
-env = if gutil.env.mode then gutil.env.mode else 'development'
+env = if $.util.env.mode then $.util.env.mode else 'development'
 compressed = env == 'production'
 
 gulp.task 'compile-sass', [], ->
