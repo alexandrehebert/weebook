@@ -77,7 +77,13 @@ gulp.task 'build:ng-app', [], ->
   .pipe $.size title: 'ng-app'
   .pipe to paths.build
 
-gulp.task 'build:jshint', ->
+gulp.task 'hints:html', ->
+  from paths.web + '/*.html'
+  .pipe reload stream: true, once: true
+  .pipe do $.htmlhint
+  .pipe do $.htmlhint.reporter
+
+gulp.task 'hints:js', ->
   from paths.web + '/**/*.js'
   .pipe reload stream: true, once: true
   .pipe $.jshint '.jshintrc'
@@ -93,7 +99,7 @@ gulp.task 'clean', (cb) ->
   rm ['build', '*.log'], cb
 
 gulp.task 'build', ['clean'], (cb) ->
-  sequence ['compile:sass', 'build:jshint', 'build:statics', 'build:vendors',
+  sequence ['compile:sass', 'hints:js', 'hints:html', 'build:statics', 'build:vendors',
             'build:ng-conf', 'build:ng-templates', 'build:ng-app', 'package:ng'], cb
 
 gulp.task 'default', ['build']
