@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('webapp.module').
+angular.module('app.weebook').
     controller('HomeController', function() {
 
     });

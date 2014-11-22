@@ -16,13 +16,13 @@ html, body {
 }
 
 .large-column {
-  @include span-columns(8 of 12);
+  @include span-columns(18 of 24);
   background-color: red;
   height: 600px;
 }
 
 .small-column {
-  @include span-columns(4 of 12);
+  @include span-columns(6 of 24);
   background-color: green;
   height: 300px;
 }

@@ -42,8 +42,12 @@ gulp.task 'compile:sass', [], ->
   .pipe to paths.build
   .pipe reload stream: true
 
-gulp.task 'build:statics', [], ->
-  from [paths.web + '/*.html']
+gulp.task 'build:statics-i18n', [], ->
+  from [ paths.web + '/i18n/*.json' ]
+  .pipe to paths.build + '/i18n/'
+
+gulp.task 'build:statics', ['build:statics-i18n'], ->
+  from [ paths.web + '/*.html' ]
   .pipe to paths.build
 
 gulp.task 'build:vendors', [], ->
