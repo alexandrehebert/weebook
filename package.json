@@ -39,12 +39,15 @@
     "gulp-size": "^1.1.0",
     "gulp-uglify": "^1.0.1",
     "gulp-util": "^3.0.1",
+    "jshint": "^2.5.10",
+    "jshint-stylish": "^1.0.0",
     "main-bower-files": "^2.4.0",
     "require-dir": "^0.1.0",
     "run-sequence": "^1.0.1"
   },
   "dependencies": {
     "gulp-changed": "^1.0.0",
-    "gulp-concat": "^2.4.1"
+    "gulp-concat": "^2.4.1",
+    "gulp-jshint": "^1.9.0"
   }
 }
