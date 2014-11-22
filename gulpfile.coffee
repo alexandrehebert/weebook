@@ -76,11 +76,16 @@ gulp.task 'build:ng-app', [], ->
   .pipe $.size title: 'ng-app'
   .pipe to paths.build
 
+gulp.task 'package:ng', ['build:ng-conf', 'build:ng-templates', 'build:ng-app'], ->
+  from paths.build + '/*.js'
+  .pipe $.concat 'app.final.js'
+  .pipe to paths.build
+
 gulp.task 'clean', (cb) ->
   rm ['build', '*.log'], cb
 
 gulp.task 'build', ['clean'], (cb) ->
   sequence ['compile:sass', 'build:statics', 'build:vendors',
-            'build:ng-conf', 'build:ng-templates', 'build:ng-app'], cb
+            'build:ng-conf', 'build:ng-templates', 'build:ng-app', 'package:ng'], cb
 
 gulp.task 'default', ['build']
