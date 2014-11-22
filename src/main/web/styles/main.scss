@@ -1,3 +1,7 @@
+@import "bourbon";
+@import "base";
+@import "neat";
+
 @mixin clear-margins() {
   margin: 0;
   padding: 0;
@@ -5,4 +9,20 @@
 
 html, body {
   @include clear-margins();
+}
+
+.container {
+  @include outer-container;
+}
+
+.large-column {
+  @include span-columns(8 of 12);
+  background-color: red;
+  height: 600px;
+}
+
+.small-column {
+  @include span-columns(4 of 12);
+  background-color: green;
+  height: 300px;
 }
