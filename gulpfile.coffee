@@ -27,7 +27,7 @@ paths =
   bower: 'src/main/vendors/bower_components', web: 'src/main/web', build: 'build'
 
 gulp.task 'compile:sass', [], ->
-  from 'src/main/web/**/*.scss'
+  from 'src/main/web/styles/style.scss'
   .pipe css.fromSASS ({
     sourcemap: true,
     includePaths: [
