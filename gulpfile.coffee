@@ -28,6 +28,7 @@ paths = bower:'src/main/vendors/bower_components', web:'src/main/web', build:'bu
 gulp.task 'compile:sass', [], ->
   from 'src/main/web/**/*.scss'
   .pipe css.fromSASS ({
+    sourcemap: true,
     includePaths: [
       paths.bower + '/bourbon/app/assets/stylesheets',
       paths.bower + '/bitters/app/assets/stylesheets',

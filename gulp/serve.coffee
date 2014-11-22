@@ -10,3 +10,5 @@ gulp.task 'serve', ['build'], ->
     browser: 'default',
     startPath: '/'
   }
+  gulp.watch 'src/main/web/**/*.scss', [ 'compile:sass' ]
+  gulp.watch 'src/main/web/**/*.js', [ 'build', browserSync.reload ]
