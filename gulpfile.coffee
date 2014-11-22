@@ -23,7 +23,8 @@ reload = browserSync.reload
 # global variables
 env = if $.util.env.mode then $.util.env.mode else 'development'
 compressed = env == 'production'
-paths = bower:'src/main/vendors/bower_components', web:'src/main/web', build:'build'
+paths =
+  bower: 'src/main/vendors/bower_components', web: 'src/main/web', build: 'build'
 
 gulp.task 'compile:sass', [], ->
   from 'src/main/web/**/*.scss'
@@ -33,6 +34,7 @@ gulp.task 'compile:sass', [], ->
       paths.bower + '/bourbon/app/assets/stylesheets',
       paths.bower + '/bitters/app/assets/stylesheets',
       paths.bower + '/neat/app/assets/stylesheets',
+      paths.bower + '/fontawesome/scss',
       paths.web + '/styles'
     ]
   })
@@ -43,11 +45,11 @@ gulp.task 'compile:sass', [], ->
   .pipe reload stream: true
 
 gulp.task 'build:statics-i18n', [], ->
-  from [ paths.web + '/i18n/*.json' ]
+  from [paths.web + '/i18n/*.json']
   .pipe to paths.build + '/i18n/'
 
 gulp.task 'build:statics', ['build:statics-i18n'], ->
-  from [ paths.web + '/*.html' ]
+  from [paths.web + '/*.html']
   .pipe to paths.build
 
 gulp.task 'build:vendors', [], ->

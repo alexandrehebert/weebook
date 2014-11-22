@@ -3,12 +3,12 @@
   "version": "1.0.0",
   "homepage": "https://github.com/alexandrehebert/weebook",
   "authors": [
-    "Alexandre HEBERT <ahebert@xebia.fr>"
+    "Alexandre HEBERT <believe.me.i@m.a1exand.re>"
   ],
   "description": "Collaborative writing",
   "moduleType": [],
   "keywords": [
-    "writing"
+    "collaborative", "writing"
   ],
   "license": "MIT",
   "ignore": [
@@ -30,6 +30,7 @@
   "devDependencies": {
     "bourbon": "~3.1.8",
     "neat": "~1.7.0",
-    "bitters": "~0.10.1"
+    "bitters": "~0.10.1",
+    "fontawesome": "https://github.com/FortAwesome/Font-Awesome.git#~4.2.0"
   }
 }

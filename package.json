@@ -2,15 +2,12 @@
   "name": "weebook",
   "version": "1.0.0",
   "description": "Collaborative writing",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "https://alexandrehebert@github.com/alexandrehebert/weebook.git"
   },
   "keywords": [
-    "writing"
+    "collaborative", "writing"
   ],
   "author": "Alexandre HEBERT",
   "license": "MIT",

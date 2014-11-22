@@ -1,6 +1,7 @@
 @import "bourbon";
 @import "base";
 @import "neat";
+@import "font-awesome";
 
 @mixin clear-margins() {
   margin: 0;
@@ -8,21 +9,40 @@
 }
 
 html, body {
-  @include clear-margins();
+  @include clear-margins;
 }
 
 .container {
   @include outer-container;
 }
 
+.column {
+  @include border-left-radius(4px);
+  @include border-right-radius(4px);
+  border: 1px solid $light-gray;
+  padding: em(15);
+}
+
 .large-column {
+  @extend .column;
   @include span-columns(18 of 24);
-  background-color: red;
-  height: 600px;
 }
 
 .small-column {
+  @extend .column;
   @include span-columns(6 of 24);
-  background-color: green;
-  height: 300px;
+}
+
+footer, header {
+  margin: em(10);
+  padding: em(10);
+  border: 0px solid $light-gray;
+}
+
+footer {
+  border-top-width: 1px;
+}
+
+header {
+  border-bottom-width: 1px;
 }
