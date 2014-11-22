@@ -79,9 +79,10 @@ gulp.task 'build:ng-app', [], ->
 
 gulp.task 'build:jshint', ->
   from paths.web + '/**/*.js'
-  .pipe do $.jshint
+  .pipe reload stream: true, once: true
+  .pipe $.jshint '.jshintrc'
   .pipe $.jshint.reporter 'jshint-stylish'
-  .pipe $.jshint.reporter 'fail'
+  .pipe $.if !browserSync.active, -> $.jshint.reporter 'fail'
 
 gulp.task 'package:ng', ['build:ng-conf', 'build:ng-templates', 'build:ng-app'], ->
   from paths.build + '/*.js'
