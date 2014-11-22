@@ -23,63 +23,64 @@ reload = browserSync.reload
 # global variables
 env = if $.util.env.mode then $.util.env.mode else 'development'
 compressed = env == 'production'
+paths = bower:'src/main/vendors/bower_components', web:'src/main/web', build:'build'
 
-gulp.task 'compile-sass', [], ->
+gulp.task 'compile:sass', [], ->
   from 'src/main/web/**/*.scss'
   .pipe css.fromSASS ({
     includePaths: [
-      'src/main/vendors/bower_components/bourbon/app/assets/stylesheets',
-      'src/main/vendors/bower_components/bitters/app/assets/stylesheets',
-      'src/main/vendors/bower_components/neat/app/assets/stylesheets',
-      'src/main/web/styles'
+      paths.bower + '/bourbon/app/assets/stylesheets',
+      paths.bower + '/bitters/app/assets/stylesheets',
+      paths.bower + '/neat/app/assets/stylesheets',
+      paths.web + '/styles'
     ]
   })
   .pipe $.concat 'styles.css'
   .pipe $.if compressed, css.minify
   .pipe $.size title: 'styles'
-  .pipe to 'build'
+  .pipe to paths.build
   .pipe reload stream: true
 
-gulp.task 'build-statics', [], ->
-  from ['src/main/web/*.html']
-  .pipe to 'build'
+gulp.task 'build:statics', [], ->
+  from [paths.web + '/*.html']
+  .pipe to paths.build
 
-gulp.task 'build-vendors', [], ->
+gulp.task 'build:vendors', [], ->
   from do bowerFiles
   .pipe $.filter '**/*.js'
   .pipe $.concat 'vendors.js'
   .pipe $.if compressed, $.uglify
   .pipe $.size title: 'vendors'
-  .pipe to 'build/libs'
+  .pipe to paths.build + '/libs'
 
-gulp.task 'build-ng-conf', [], ->
+gulp.task 'build:ng-conf', [], ->
   from ['src/main/conf/' + env + '.json']
   .pipe ng.configuration 'app.conf'
   .pipe $.rename basename: 'conf'
   .pipe $.size title: 'ng-conf'
-  .pipe to 'build'
+  .pipe to paths.build
 
-gulp.task 'build-ng-templates', [], ->
-  from 'src/main/web/**/*.html'
+gulp.task 'build:ng-templates', [], ->
+  from paths.web + '/**/*.html'
   .pipe ng.templates filename: 'templates.js', module: 'app.templates', standalone: true
   .pipe $.if compressed, $.uglify
   .pipe $.size title: 'ng-templates'
-  .pipe to 'build'
+  .pipe to paths.build
 
-gulp.task 'build-ng-app', [], ->
-  from 'src/main/web/**/*.js'
+gulp.task 'build:ng-app', [], ->
+  from paths.web + '/**/*.js'
   .pipe do ng.annotate
   .pipe $.concat 'app.js'
   .pipe $.if compressed, $.uglify
   .pipe $.if compressed, $.obfuscate
   .pipe $.size title: 'ng-app'
-  .pipe to 'build'
+  .pipe to paths.build
 
 gulp.task 'clean', (cb) ->
-  rm ['.tmp', 'dist'], cb
+  rm ['build', '*.log'], cb
 
 gulp.task 'build', ['clean'], (cb) ->
-  sequence ['compile-sass', 'build-statics', 'build-vendors',
-            'build-ng-conf', 'build-ng-templates', 'build-ng-app'], cb
+  sequence ['compile:sass', 'build:statics', 'build:vendors',
+            'build:ng-conf', 'build:ng-templates', 'build:ng-app'], cb
 
 gulp.task 'default', ['build']

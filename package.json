@@ -25,6 +25,7 @@
     "coffee-script": "^1.8.0",
     "del": "^0.1.3",
     "gulp": "^3.8.10",
+    "gulp-clean": "^0.3.1",
     "gulp-filter": "^1.0.2",
     "gulp-if-else": "^1.0.2",
     "gulp-load-plugins": "^0.7.1",
