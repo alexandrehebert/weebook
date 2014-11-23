@@ -28,16 +28,15 @@ paths =
 
 gulp.task 'compile:sass', [], ->
   from 'src/main/web/styles/style.scss'
-  .pipe css.fromSASS ({
+  .pipe css.fromSASS
     sourcemap: true,
     includePaths: [
-      paths.bower + '/bourbon/app/assets/stylesheets',
-      paths.bower + '/bitters/app/assets/stylesheets',
-      paths.bower + '/neat/app/assets/stylesheets',
-      paths.bower + '/fontawesome/scss',
+      paths.bower + '/bourbon/app/assets/stylesheets'
+      paths.bower + '/bitters/app/assets/stylesheets'
+      paths.bower + '/neat/app/assets/stylesheets'
+      paths.bower + '/fontawesome/scss'
       paths.web + '/styles'
     ]
-  })
   .pipe $.concat 'styles.css'
   .pipe $.if compressed, css.minify
   .pipe $.size title: 'styles'
