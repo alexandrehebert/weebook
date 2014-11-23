@@ -28,11 +28,11 @@ html, body {
   @include span-columns(6 of 24);
 }
 
-header {
+/* header {
   margin-bottom: em(10);
 }
 
-/* footer {
+footer {
   margin: em(10);
   padding: em(10);
   border: 0px solid $light-gray;
