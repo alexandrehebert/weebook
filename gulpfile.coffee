@@ -29,7 +29,7 @@ browserSync = require 'browser-sync'
 
 # global variables
 
-env = if $.util.env.mode then $.util.env.mode else 'development'
+env = if $.util.env.mode? then $.util.env.mode else 'development'
 compressed = env == 'production'
 debug = $.util.env.debug?
 paths =
@@ -37,6 +37,14 @@ paths =
   web: 'src/main/web'
   build: 'build'
 reload = browserSync.reload
+
+
+# some prints
+
+console.log 'Build in ' + env + ' mode.'
+console.log 'Debug is ' + (if debug then 'enabled' else 'disabled') + '.'
+console.log 'Paths are : '
+console.log paths
 
 
 # preprocessing tasks
@@ -131,12 +139,14 @@ gulp.task 'package:ng', ['build:ng-conf', 'build:ng-templates', 'build:ng-app'],
 
 # clean tasks
 
-gulp.task 'clean', ['clean:before-build'], ->
+gulp.task 'clean', ['clean:before-build'], (cb) ->
+  rm [
+    '*.log'
+  ], cb
 
 gulp.task 'clean:before-build', (cb) ->
   rm [
     'build'
-    '*.log'
   ], cb
 
 gulp.task 'clean:after-build', (cb) ->
