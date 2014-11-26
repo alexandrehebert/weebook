@@ -28,10 +28,10 @@ browserSync = require 'browser-sync'
 
 
 # global variables
-
-env = if $.util.env.mode? then $.util.env.mode else 'development'
-compressed = env == 'production'
-debug = $.util.env.debug?
+_ =
+  env: if $.util.env.mode? then $.util.env.mode else 'development'
+  compressed: $.util.env.mode == 'production'
+  debug: $.util.env.debug?
 paths =
   bower: 'src/main/vendors/bower_components'
   web: 'src/main/web'
@@ -41,8 +41,8 @@ reload = browserSync.reload
 
 # some prints
 
-$.util.log 'Build in ' + env + ' mode.'
-$.util.log 'Debug is ' + (if debug then 'enabled' else 'disabled') + '.'
+$.util.log 'Build in ' + _.env + ' mode.'
+$.util.log 'Debug is ' + (if _.debug then 'enabled' else 'disabled') + '.'
 $.util.log 'Paths are : '
 $.util.log paths
 
@@ -54,7 +54,7 @@ gulp.task 'compile:sass', [], ->
   ]
   .pipe do $.sourcemaps.init
   .pipe css.fromSASS
-    errLogToConsole: debug
+    errLogToConsole: _.debug
     includePaths: [
       paths.bower + '/bourbon/app/assets/stylesheets'
       paths.bower + '/bitters/app/assets/stylesheets'
@@ -62,9 +62,9 @@ gulp.task 'compile:sass', [], ->
       paths.bower + '/fontawesome/scss'
       paths.web + '/**/*.scss'
     ]
-  .pipe $.sourcemaps.write debug: debug
+  .pipe $.sourcemaps.write debug: _.debug
   .pipe $.concat 'styles.css'
-  .pipe $.if compressed, css.minify
+  .pipe $.if _.compressed, css.minify
   .pipe $.size title: 'styles'
   .pipe to paths.build
   .pipe reload stream: true
@@ -84,12 +84,12 @@ gulp.task 'build:vendors', [], ->
   from do bowerFiles
   .pipe $.filter '**/*.js'
   .pipe $.concat 'vendors.js'
-  .pipe $.if compressed, $.uglify
+  .pipe $.if _.compressed, $.uglify
   .pipe $.size title: 'vendors'
   .pipe to paths.build + '/libs'
 
 gulp.task 'build:ng-conf', [], ->
-  from ['src/main/conf/' + env + '.json']
+  from ['src/main/conf/' + _.env + '.json']
   .pipe ng.configuration 'app.conf'
   .pipe $.rename basename: 'conf'
   .pipe $.size title: 'ng-conf'
@@ -98,7 +98,7 @@ gulp.task 'build:ng-conf', [], ->
 gulp.task 'build:ng-templates', [], ->
   from paths.web + '/**/*.html'
   .pipe ng.templates filename: 'templates.js', module: 'app.templates', standalone: true
-  .pipe $.if compressed, $.uglify
+  .pipe $.if _.compressed, $.uglify
   .pipe $.size title: 'ng-templates'
   .pipe to paths.build
 
@@ -106,8 +106,8 @@ gulp.task 'build:ng-app', [], ->
   from paths.web + '/**/*.js'
   .pipe do ng.annotate
   .pipe $.concat 'app.js'
-  .pipe $.if compressed, $.uglify
-  .pipe $.if compressed, $.obfuscate
+  .pipe $.if _.compressed, $.uglify
+  .pipe $.if _.compressed, $.obfuscate
   .pipe $.size title: 'ng-app'
   .pipe to paths.build
 
