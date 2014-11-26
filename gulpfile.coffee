@@ -35,6 +35,7 @@ paths =
   bower: 'src/main/vendors/bower_components', web: 'src/main/web', build: 'build'
 reload = browserSync.reload
 
+
 # preprocessing tasks
 
 gulp.task 'compile:sass', [], ->
