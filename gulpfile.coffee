@@ -1,47 +1,64 @@
 'use strict';
 
+
 # use dependencies
+
 gulp = require 'gulp'
+task = gulp.task;
 from = gulp.src
 to = gulp.dest
 $ = do require 'gulp-load-plugins'
 $.if = require 'gulp-if-else'
-
 rm = require 'del'
 sequence = require 'run-sequence'
 css =
-  minify: (require 'gulp-minify-css'), fromSASS: (require 'gulp-sass')
+  minify: (require 'gulp-minify-css')
+  fromSASS: (require 'gulp-sass')
 ng =
-  annotate: (require 'gulp-ng-annotate'), templates: (require 'gulp-ng-templates'), configuration: (require 'gulp-ng-config')
+  annotate: (require 'gulp-ng-annotate')
+  templates: (require 'gulp-ng-templates')
+  configuration: (require 'gulp-ng-config')
 bowerFiles = require 'main-bower-files'
 browserSync = require 'browser-sync'
-reload = browserSync.reload
+
 
 # more gulp files
+
 (require 'require-dir') './gulp';
 
+
 # global variables
+
 env = if $.util.env.mode then $.util.env.mode else 'development'
 compressed = env == 'production'
 paths =
   bower: 'src/main/vendors/bower_components', web: 'src/main/web', build: 'build'
+reload = browserSync.reload
+
+# preprocessing tasks
 
 gulp.task 'compile:sass', [], ->
-  from 'src/main/web/styles/style.scss'
+  from [
+    paths.web + '/styles/style.scss'
+  ]
+  .pipe do $.sourcemaps.init
   .pipe css.fromSASS
-    sourcemap: true,
     includePaths: [
       paths.bower + '/bourbon/app/assets/stylesheets'
       paths.bower + '/bitters/app/assets/stylesheets'
       paths.bower + '/neat/app/assets/stylesheets'
       paths.bower + '/fontawesome/scss'
-      paths.web + '/styles'
+      paths.web + '/**/*.scss'
     ]
+  .pipe do $.sourcemaps.write
   .pipe $.concat 'styles.css'
   .pipe $.if compressed, css.minify
   .pipe $.size title: 'styles'
   .pipe to paths.build
   .pipe reload stream: true
+
+
+# build tasks
 
 gulp.task 'build:statics-i18n', [], ->
   from [paths.web + '/i18n/*.json']
@@ -82,6 +99,9 @@ gulp.task 'build:ng-app', [], ->
   .pipe $.size title: 'ng-app'
   .pipe to paths.build
 
+
+# dev helpers tasks
+
 gulp.task 'hints:html', ->
   from paths.web + '/*.html'
   .pipe reload stream: true, once: true
@@ -95,16 +115,37 @@ gulp.task 'hints:js', ->
   .pipe $.jshint.reporter 'jshint-stylish'
   .pipe $.if !browserSync.active, -> $.jshint.reporter 'fail'
 
+
+# packaging tasks
+
 gulp.task 'package:ng', ['build:ng-conf', 'build:ng-templates', 'build:ng-app'], ->
   from paths.build + '/*.js'
   .pipe $.concat 'app.final.js'
   .pipe to paths.build
 
-gulp.task 'clean', (cb) ->
-  rm ['build', '*.log'], cb
 
-gulp.task 'build', ['clean'], (cb) ->
+# clean tasks
+
+gulp.task 'clean', ['clean:before-build'], ->
+
+gulp.task 'clean:before-build', (cb) ->
+  rm [
+    'build'
+    '*.log'
+  ], cb
+
+gulp.task 'clean:after-build', (cb) ->
+  rm [
+    paths.build + '/app.js'
+    paths.build + '/templates.js'
+    paths.build + '/conf.js'
+  ], cb
+
+
+# final build task
+
+gulp.task 'build', ['clean:before-build'], (cb) ->
   sequence ['compile:sass', 'hints:js', 'hints:html', 'build:statics', 'build:vendors',
-            'build:ng-conf', 'build:ng-templates', 'build:ng-app', 'package:ng'], cb
+            'build:ng-conf', 'build:ng-templates', 'build:ng-app', 'package:ng'], 'clean:after-build', cb
 
 gulp.task 'default', ['build']

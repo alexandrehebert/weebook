@@ -7,7 +7,8 @@
     "url": "https://alexandrehebert@github.com/alexandrehebert/weebook.git"
   },
   "keywords": [
-    "collaborative", "writing"
+    "collaborative",
+    "writing"
   ],
   "author": "Alexandre HEBERT",
   "license": "MIT",
@@ -46,6 +47,7 @@
     "gulp-changed": "^1.0.0",
     "gulp-concat": "^2.4.1",
     "gulp-htmlhint": "0.0.9",
-    "gulp-jshint": "^1.9.0"
+    "gulp-jshint": "^1.9.0",
+    "gulp-sourcemaps": "^1.2.8"
   }
 }
