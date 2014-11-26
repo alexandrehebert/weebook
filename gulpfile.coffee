@@ -42,7 +42,7 @@ reload = browserSync.reload
 
 # some prints
 
-log 'Build in ' + _.env + ' mode.'
+log "Build in #{ _.env } mode."
 log 'Debug is ' + (if _.debug then 'enabled' else 'disabled') + '.'
 log 'Paths are : '
 log paths
