@@ -41,11 +41,10 @@ reload = browserSync.reload
 
 # some prints
 
-console.log 'Build in ' + env + ' mode.'
-console.log 'Debug is ' + (if debug then 'enabled' else 'disabled') + '.'
-console.log 'Paths are : '
-console.log paths
-
+$.util.log 'Build in ' + env + ' mode.'
+$.util.log 'Debug is ' + (if debug then 'enabled' else 'disabled') + '.'
+$.util.log 'Paths are : '
+$.util.log paths
 
 # preprocessing tasks
 
@@ -155,6 +154,7 @@ gulp.task 'clean:after-build', (cb) ->
     paths.build + '/templates.js'
     paths.build + '/conf.js'
   ], cb
+  do $.util.beep
 
 
 # final build task
