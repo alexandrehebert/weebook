@@ -31,8 +31,11 @@ browserSync = require 'browser-sync'
 
 env = if $.util.env.mode then $.util.env.mode else 'development'
 compressed = env == 'production'
+debug = $.util.env.debug?
 paths =
-  bower: 'src/main/vendors/bower_components', web: 'src/main/web', build: 'build'
+  bower: 'src/main/vendors/bower_components'
+  web: 'src/main/web'
+  build: 'build'
 reload = browserSync.reload
 
 
@@ -44,6 +47,7 @@ gulp.task 'compile:sass', [], ->
   ]
   .pipe do $.sourcemaps.init
   .pipe css.fromSASS
+    errLogToConsole: debug
     includePaths: [
       paths.bower + '/bourbon/app/assets/stylesheets'
       paths.bower + '/bitters/app/assets/stylesheets'
@@ -51,7 +55,7 @@ gulp.task 'compile:sass', [], ->
       paths.bower + '/fontawesome/scss'
       paths.web + '/**/*.scss'
     ]
-  .pipe do $.sourcemaps.write
+  .pipe $.sourcemaps.write debug: debug
   .pipe $.concat 'styles.css'
   .pipe $.if compressed, css.minify
   .pipe $.size title: 'styles'
