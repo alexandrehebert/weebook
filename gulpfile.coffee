@@ -9,6 +9,7 @@ from = gulp.src
 to = gulp.dest
 $ = do require 'gulp-load-plugins'
 $.if = require 'gulp-if-else'
+log = $.util.log
 rm = require 'del'
 sequence = require 'run-sequence'
 css =
@@ -41,10 +42,10 @@ reload = browserSync.reload
 
 # some prints
 
-$.util.log 'Build in ' + _.env + ' mode.'
-$.util.log 'Debug is ' + (if _.debug then 'enabled' else 'disabled') + '.'
-$.util.log 'Paths are : '
-$.util.log paths
+log 'Build in ' + _.env + ' mode.'
+log 'Debug is ' + (if _.debug then 'enabled' else 'disabled') + '.'
+log 'Paths are : '
+log paths
 
 # preprocessing tasks
 
