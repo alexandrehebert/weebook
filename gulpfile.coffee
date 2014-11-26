@@ -160,8 +160,10 @@ gulp.task 'clean:after-build', (cb) ->
 
 # final build task
 
-gulp.task 'build', ['clean:before-build'], (cb) ->
-  sequence ['compile:sass', 'hints:js', 'hints:html', 'build:statics', 'build:vendors',
-            'build:ng-conf', 'build:ng-templates', 'build:ng-app', 'package:ng'], 'clean:after-build', cb
+gulp.task 'build', [], (cb) ->
+  sequence 'clean:before-build', [
+    'compile:sass', 'hints:js', 'hints:html', 'build:statics', 'build:vendors',
+    'build:ng-conf', 'build:ng-templates', 'build:ng-app', 'package:ng'
+  ], 'clean:after-build', cb
 
 gulp.task 'default', ['build']
