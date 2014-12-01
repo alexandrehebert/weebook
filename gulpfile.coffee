@@ -47,8 +47,7 @@ paths =
 
 log "Build in #{ args.env } mode."
 log 'Debug is ' + (if args.debug then 'enabled' else 'disabled') + '.'
-log 'Paths are : '
-log paths
+log 'Paths are :\n', paths
 
 # preprocessing tasks
 
@@ -76,13 +75,21 @@ gulp.task 'compile:sass', [], ->
 
 # build tasks
 
-gulp.task 'build:statics-i18n', [], ->
-  from [paths.web + '/i18n/*.json']
+gulp.task 'build:statics-i18n', ->
+  from [
+    paths.web + '/i18n/*.json'
+  ]
   .pipe to paths.build + '/i18n/'
 
-gulp.task 'build:statics', ['build:statics-i18n'], ->
-  from [paths.web + '/*.html']
+gulp.task 'build:statics-root-files', ->
+  from [
+    paths.web + '/*.html'
+    paths.web + '/*.ico'
+  ]
   .pipe to paths.build
+
+gulp.task 'build:statics', (cb) ->
+  sequence ['build:statics-i18n', 'build:statics-root-files'], cb
 
 gulp.task 'build:vendors', [], ->
   vendorsFiles = do bowerFiles
@@ -117,6 +124,9 @@ gulp.task 'build:ng-app', [], ->
   .pipe $.if args.compressed, $.obfuscate
   .pipe $.size title: 'ng-app'
   .pipe to paths.exploded
+
+gulp.task 'build:ng', (cb) ->
+  sequence ['build:ng-conf', 'build:ng-templates', 'build:ng-app'], cb
 
 
 # dev helpers tasks
@@ -181,8 +191,8 @@ gulp.task 'test', [], (cb) ->
 
 gulp.task 'build', [], (cb) ->
   sequence 'clean:before-build',
-    'compile:sass', ['hints:js', 'hints:html'], ['build:statics', 'build:vendors'],
-    ['build:ng-conf', 'build:ng-templates', 'build:ng-app'], 'package:ng',
+    'compile:sass', ['hints:js', 'hints:html'],
+    ['build:statics', 'build:vendors'], 'build:ng', 'package:ng',
     'clean:after-build', cb
 
 gulp.task 'default', ['build']
