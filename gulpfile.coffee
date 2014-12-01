@@ -4,26 +4,21 @@
 # use dependencies
 
 gulp = require 'gulp'
-task = task
-from = gulp.src
-to = gulp.dest
-watch = -> gulp.watch arguments...
-task = -> gulp.task arguments...
 $ = do require 'gulp-load-plugins'
 $.if = require 'gulp-if-else'
-log = $.util.log
 rm = require 'del'
 sequence = require 'run-sequence'
 karma = (require 'karma').server
 css =
   minify: (require 'gulp-minify-css')
-  compile: (require 'gulp-sass')
+  compile: $.sass
 ng =
   annotate: (require 'gulp-ng-annotate')
   templates: (require 'gulp-ng-templates')
   configuration: (require 'gulp-ng-config')
 bowerFiles = require 'main-bower-files'
 browserSync = require 'browser-sync'
+{ reload } = browserSync
 
 
 # more gulp files
@@ -32,6 +27,7 @@ browserSync = require 'browser-sync'
 
 
 # global variables
+
 args =
   env: if $.util.env.mode? then $.util.env.mode else 'development'
   compressed: $.util.env.mode is 'production'
@@ -42,7 +38,15 @@ paths =
   build: 'build'
   exploded: 'build/exploded'
   test: 'src/test'
-{ reload } = browserSync
+
+
+# shortcuts / helpers
+
+from = gulp.src
+to = gulp.dest
+watch = -> gulp.watch arguments...
+task = -> gulp.task arguments...
+log = $.util.log
 
 
 # some prints
@@ -105,8 +109,12 @@ task 'build:vendors', [], ->
   .pipe to paths.build + '/libs'
 
 task 'build:ng-conf', [], ->
-  from ['src/main/conf/' + args.env + '.yml']
+  from [
+    "src/main/conf/#{ args.env }.yml"
+    "src/main/conf/!(development|production).yml"
+  ]
   .pipe do $.yaml
+  .pipe $.extend 'conf.json'
   .pipe ng.configuration 'app.conf'
   .pipe $.rename basename: 'conf'
   .pipe $.size title: 'ng-conf'
@@ -188,7 +196,7 @@ task 'test', [], (cb) ->
     ],
     singleRun: true
   , cb
-  
+
 
 # development tasks
 

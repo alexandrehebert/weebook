@@ -1,0 +1,13 @@
+routes:
+
+  # list of ui states
+
+  home:
+    url: /
+    templateUrl: home/home.html
+    controller: HomeController
+
+  "404":
+    url: /404
+    templateUrl: home/error.html
+    controller: HomeController
