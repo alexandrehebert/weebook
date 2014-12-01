@@ -2,6 +2,7 @@
 
 gulp = require 'gulp'
 browserSync = require 'browser-sync'
+{ reload } = browserSync
 
 gulp.task 'serve', ['build'], ->
   browserSync {
@@ -12,7 +13,9 @@ gulp.task 'serve', ['build'], ->
     notify: true
     open: false
   }
-  gulp.watch 'src/main/web/**/*.scss', ['compile:sass']
-  gulp.watch 'src/main/web/i18n/*.json', ['build:statics-i18n']
-  gulp.watch 'src/main/web/*.html', ['build:statics']
-  gulp.watch 'src/main/web/**/*.js', ['package:ng', browserSync.reload]
+  gulp.watch 'src/main/web/**/*.scss', ['compile:sass', reload]
+  gulp.watch 'src/main/web/i18n/*.json', ['build:statics-i18n', reload]
+  gulp.watch 'src/main/web/*.html', ['build:statics', reload]
+  gulp.watch 'src/main/web/**/*.js', ['package:ng', reload]
+  gulp.watch 'src/main/conf/*.yml', ['build:ng-conf', reload]
+  gulp.watch 'build/exploded/*.js', ['package:ng', reload]

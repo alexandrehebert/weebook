@@ -38,6 +38,7 @@ paths =
   bower: 'src/main/vendors/bower_components'
   web: 'src/main/web'
   build: 'build'
+  exploded: 'build/exploded'
   test: 'src/test'
 { reload } = browserSync
 
@@ -94,18 +95,19 @@ gulp.task 'build:vendors', [], ->
   .pipe to paths.build + '/libs'
 
 gulp.task 'build:ng-conf', [], ->
-  from ['src/main/conf/' + args.env + '.json']
+  from ['src/main/conf/' + args.env + '.yml']
+  .pipe do $.yaml
   .pipe ng.configuration 'app.conf'
   .pipe $.rename basename: 'conf'
   .pipe $.size title: 'ng-conf'
-  .pipe to paths.build
+  .pipe to paths.exploded
 
 gulp.task 'build:ng-templates', [], ->
   from paths.web + '/**/*.html'
   .pipe ng.templates filename: 'templates.js', module: 'app.templates', standalone: true
   .pipe $.if args.compressed, $.uglify
   .pipe $.size title: 'ng-templates'
-  .pipe to paths.build
+  .pipe to paths.exploded
 
 gulp.task 'build:ng-app', [], ->
   from paths.web + '/**/*.js'
@@ -114,7 +116,7 @@ gulp.task 'build:ng-app', [], ->
   .pipe $.if args.compressed, $.uglify
   .pipe $.if args.compressed, $.obfuscate
   .pipe $.size title: 'ng-app'
-  .pipe to paths.build
+  .pipe to paths.exploded
 
 
 # dev helpers tasks
@@ -135,8 +137,8 @@ gulp.task 'hints:js', ->
 
 # packaging tasks
 
-gulp.task 'package:ng', ['build:ng-conf', 'build:ng-templates', 'build:ng-app'], ->
-  from paths.build + '/*.js'
+gulp.task 'package:ng', [], ->
+  from paths.exploded + '/*.js'
   .pipe $.concat 'app.final.js'
   .pipe to paths.build
 
@@ -153,12 +155,13 @@ gulp.task 'clean:before-build', (cb) ->
     'build'
   ], cb
 
-gulp.task 'clean:after-build', (cb) ->
-  rm [
-    paths.build + '/app.js'
-    paths.build + '/templates.js'
-    paths.build + '/conf.js'
-  ], cb
+gulp.task 'clean:after-build', ->
+  rm paths.exploded if args.compressed
+  #  rm [
+  #    paths.build + '/app.js'
+  #    paths.build + '/templates.js'
+  #    paths.build + '/conf.js'
+  #  ], cb
   do $.util.beep
 
 
@@ -177,9 +180,9 @@ gulp.task 'test', [], (cb) ->
 # final build task
 
 gulp.task 'build', [], (cb) ->
-  sequence 'clean:before-build', [
-    'compile:sass', 'hints:js', 'hints:html', 'build:statics', 'build:vendors',
-    'build:ng-conf', 'build:ng-templates', 'build:ng-app', 'package:ng'
-  ], 'clean:after-build', cb
+  sequence 'clean:before-build',
+    'compile:sass', ['hints:js', 'hints:html'], ['build:statics', 'build:vendors'],
+    ['build:ng-conf', 'build:ng-templates', 'build:ng-app'], 'package:ng',
+    'clean:after-build', cb
 
 gulp.task 'default', ['build']
