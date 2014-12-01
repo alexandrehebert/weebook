@@ -12,9 +12,10 @@ $.if = require 'gulp-if-else'
 log = $.util.log
 rm = require 'del'
 sequence = require 'run-sequence'
+karma = (require 'karma').server
 css =
   minify: (require 'gulp-minify-css')
-  fromSASS: (require 'gulp-sass')
+  compile: (require 'gulp-sass')
 ng =
   annotate: (require 'gulp-ng-annotate')
   templates: (require 'gulp-ng-templates')
@@ -29,7 +30,7 @@ browserSync = require 'browser-sync'
 
 
 # global variables
-_ =
+args =
   env: if $.util.env.mode? then $.util.env.mode else 'development'
   compressed: $.util.env.mode == 'production'
   debug: $.util.env.debug?
@@ -37,13 +38,14 @@ paths =
   bower: 'src/main/vendors/bower_components'
   web: 'src/main/web'
   build: 'build'
-reload = browserSync.reload
+  test: 'src/test'
+{ reload } = browserSync
 
 
 # some prints
 
-log "Build in #{ _.env } mode."
-log 'Debug is ' + (if _.debug then 'enabled' else 'disabled') + '.'
+log "Build in #{ args.env } mode."
+log 'Debug is ' + (if args.debug then 'enabled' else 'disabled') + '.'
 log 'Paths are : '
 log paths
 
@@ -54,8 +56,8 @@ gulp.task 'compile:sass', [], ->
     paths.web + '/styles/style.scss'
   ]
   .pipe do $.sourcemaps.init
-  .pipe css.fromSASS
-    errLogToConsole: _.debug
+  .pipe css.compile
+    errLogToConsole: args.debug
     includePaths: [
       paths.bower + '/bourbon/app/assets/stylesheets'
       paths.bower + '/bitters/app/assets/stylesheets'
@@ -63,9 +65,9 @@ gulp.task 'compile:sass', [], ->
       paths.bower + '/fontawesome/scss'
       paths.web + '/**/*.scss'
     ]
-  .pipe $.sourcemaps.write debug: _.debug
+  .pipe $.sourcemaps.write debug: args.debug
   .pipe $.concat 'styles.css'
-  .pipe $.if _.compressed, css.minify
+  .pipe $.if args.compressed, css.minify
   .pipe $.size title: 'styles'
   .pipe to paths.build
   .pipe reload stream: true
@@ -82,15 +84,17 @@ gulp.task 'build:statics', ['build:statics-i18n'], ->
   .pipe to paths.build
 
 gulp.task 'build:vendors', [], ->
-  from do bowerFiles
+  vendorsFiles = do bowerFiles
+  log vendorsFiles if args.debug
+  from vendorsFiles
   .pipe $.filter '**/*.js'
   .pipe $.concat 'vendors.js'
-  .pipe $.if _.compressed, $.uglify
+  .pipe $.if args.compressed, $.uglify
   .pipe $.size title: 'vendors'
   .pipe to paths.build + '/libs'
 
 gulp.task 'build:ng-conf', [], ->
-  from ['src/main/conf/' + _.env + '.json']
+  from ['src/main/conf/' + args.env + '.json']
   .pipe ng.configuration 'app.conf'
   .pipe $.rename basename: 'conf'
   .pipe $.size title: 'ng-conf'
@@ -99,7 +103,7 @@ gulp.task 'build:ng-conf', [], ->
 gulp.task 'build:ng-templates', [], ->
   from paths.web + '/**/*.html'
   .pipe ng.templates filename: 'templates.js', module: 'app.templates', standalone: true
-  .pipe $.if _.compressed, $.uglify
+  .pipe $.if args.compressed, $.uglify
   .pipe $.size title: 'ng-templates'
   .pipe to paths.build
 
@@ -107,8 +111,8 @@ gulp.task 'build:ng-app', [], ->
   from paths.web + '/**/*.js'
   .pipe do ng.annotate
   .pipe $.concat 'app.js'
-  .pipe $.if _.compressed, $.uglify
-  .pipe $.if _.compressed, $.obfuscate
+  .pipe $.if args.compressed, $.uglify
+  .pipe $.if args.compressed, $.obfuscate
   .pipe $.size title: 'ng-app'
   .pipe to paths.build
 
@@ -156,6 +160,18 @@ gulp.task 'clean:after-build', (cb) ->
     paths.build + '/conf.js'
   ], cb
   do $.util.beep
+
+
+# tests tasks
+
+gulp.task 'test', [], (cb) ->
+  karma.start
+    configFile: __dirname + '/src/test/karma.conf.coffee',
+    files: [
+
+    ],
+    singleRun: true
+  , cb
 
 
 # final build task
