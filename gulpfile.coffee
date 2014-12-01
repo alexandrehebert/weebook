@@ -32,7 +32,7 @@ browserSync = require 'browser-sync'
 # global variables
 args =
   env: if $.util.env.mode? then $.util.env.mode else 'development'
-  compressed: $.util.env.mode == 'production'
+  compressed: $.util.env.mode is 'production'
   debug: $.util.env.debug?
 paths =
   bower: 'src/main/vendors/bower_components'
