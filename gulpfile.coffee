@@ -4,9 +4,11 @@
 # use dependencies
 
 gulp = require 'gulp'
-task = gulp.task;
+task = task
 from = gulp.src
 to = gulp.dest
+watch = -> gulp.watch arguments...
+task = -> gulp.task arguments...
 $ = do require 'gulp-load-plugins'
 $.if = require 'gulp-if-else'
 log = $.util.log
@@ -49,9 +51,10 @@ log "Build in #{ args.env } mode."
 log 'Debug is ' + (if args.debug then 'enabled' else 'disabled') + '.'
 log 'Paths are :\n', paths
 
+
 # preprocessing tasks
 
-gulp.task 'compile:sass', [], ->
+task 'compile:sass', [], ->
   from [
     paths.web + '/styles/style.scss'
   ]
@@ -75,23 +78,23 @@ gulp.task 'compile:sass', [], ->
 
 # build tasks
 
-gulp.task 'build:statics-i18n', ->
+task 'build:statics-i18n', ->
   from [
     paths.web + '/i18n/*.json'
   ]
   .pipe to paths.build + '/i18n/'
 
-gulp.task 'build:statics-root-files', ->
+task 'build:statics-root-files', ->
   from [
     paths.web + '/*.html'
     paths.web + '/*.ico'
   ]
   .pipe to paths.build
 
-gulp.task 'build:statics', (cb) ->
+task 'build:statics', (cb) ->
   sequence ['build:statics-i18n', 'build:statics-root-files'], cb
 
-gulp.task 'build:vendors', [], ->
+task 'build:vendors', [], ->
   vendorsFiles = do bowerFiles
   log vendorsFiles if args.debug
   from vendorsFiles
@@ -101,7 +104,7 @@ gulp.task 'build:vendors', [], ->
   .pipe $.size title: 'vendors'
   .pipe to paths.build + '/libs'
 
-gulp.task 'build:ng-conf', [], ->
+task 'build:ng-conf', [], ->
   from ['src/main/conf/' + args.env + '.yml']
   .pipe do $.yaml
   .pipe ng.configuration 'app.conf'
@@ -109,14 +112,14 @@ gulp.task 'build:ng-conf', [], ->
   .pipe $.size title: 'ng-conf'
   .pipe to paths.exploded
 
-gulp.task 'build:ng-templates', [], ->
+task 'build:ng-templates', [], ->
   from paths.web + '/**/*.html'
   .pipe ng.templates filename: 'templates.js', module: 'app.templates', standalone: true
   .pipe $.if args.compressed, $.uglify
   .pipe $.size title: 'ng-templates'
   .pipe to paths.exploded
 
-gulp.task 'build:ng-app', [], ->
+task 'build:ng-app', [], ->
   from paths.web + '/**/*.js'
   .pipe do ng.annotate
   .pipe $.concat 'app.js'
@@ -125,19 +128,19 @@ gulp.task 'build:ng-app', [], ->
   .pipe $.size title: 'ng-app'
   .pipe to paths.exploded
 
-gulp.task 'build:ng', (cb) ->
+task 'build:ng', (cb) ->
   sequence ['build:ng-conf', 'build:ng-templates', 'build:ng-app'], cb
 
 
 # dev helpers tasks
 
-gulp.task 'hints:html', ->
+task 'hints:html', ->
   from paths.web + '/*.html'
   .pipe reload stream: true, once: true
   .pipe do $.htmlhint
   .pipe do $.htmlhint.reporter
 
-gulp.task 'hints:js', ->
+task 'hints:js', ->
   from paths.web + '/**/*.js'
   .pipe reload stream: true, once: true
   .pipe $.jshint '.jshintrc'
@@ -147,7 +150,7 @@ gulp.task 'hints:js', ->
 
 # packaging tasks
 
-gulp.task 'package:ng', [], ->
+task 'package:ng', [], ->
   from paths.exploded + '/*.js'
   .pipe $.concat 'app.final.js'
   .pipe to paths.build
@@ -155,17 +158,17 @@ gulp.task 'package:ng', [], ->
 
 # clean tasks
 
-gulp.task 'clean', ['clean:before-build'], (cb) ->
+task 'clean', ['clean:before-build'], (cb) ->
   rm [
     '*.log'
   ], cb
 
-gulp.task 'clean:before-build', (cb) ->
+task 'clean:before-build', (cb) ->
   rm [
     'build'
   ], cb
 
-gulp.task 'clean:after-build', ->
+task 'clean:after-build', ->
   rm paths.exploded if args.compressed
   #  rm [
   #    paths.build + '/app.js'
@@ -177,7 +180,7 @@ gulp.task 'clean:after-build', ->
 
 # tests tasks
 
-gulp.task 'test', [], (cb) ->
+task 'test', [], (cb) ->
   karma.start
     configFile: __dirname + '/src/test/karma.conf.coffee',
     files: [
@@ -185,14 +188,34 @@ gulp.task 'test', [], (cb) ->
     ],
     singleRun: true
   , cb
+  
+
+# development tasks
+
+task 'serve', ['build'], ->
+  browserSync {
+    server: {baseDir: paths.build}
+    port: 4000
+    browser: 'default'
+    startPath: '/'
+    notify: true
+    open: false
+  }
+  watch 'src/main/web/**/*.scss', ['compile:sass', reload]
+  watch 'src/main/web/i18n/*.json', ['build:statics-i18n', reload]
+  watch 'src/main/web/*.html', ['build:statics', reload]
+  watch 'src/main/web/**/*.html', ['build:ng-templates', reload]
+  watch 'src/main/web/**/*.js', ['build:ng-app', reload]
+  watch 'src/main/conf/*.yml', ['build:ng-conf', reload]
+  watch 'build/exploded/*.js', ['package:ng', reload]
 
 
 # final build task
 
-gulp.task 'build', [], (cb) ->
+task 'build', [], (cb) ->
   sequence 'clean:before-build',
     'compile:sass', ['hints:js', 'hints:html'],
     ['build:statics', 'build:vendors'], 'build:ng', 'package:ng',
     'clean:after-build', cb
 
-gulp.task 'default', ['build']
+task 'default', ['build']
