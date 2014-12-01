@@ -35,6 +35,7 @@ args =
 paths =
   bower: 'src/main/vendors/bower_components'
   web: 'src/main/web'
+  conf: 'src/main/conf'
   build: 'build'
   exploded: 'build/exploded'
   test: 'src/test'
@@ -110,8 +111,8 @@ task 'build:vendors', [], ->
 
 task 'build:ng-conf', [], ->
   from [
-    "src/main/conf/#{ args.env }.yml"
-    "src/main/conf/!(development|production).yml"
+    "#{ paths.conf }/#{ args.env }.yml"
+    "#{ paths.conf }/!(development|production).yml"
   ]
   .pipe do $.yaml
   .pipe $.extend 'conf.json'
@@ -121,7 +122,14 @@ task 'build:ng-conf', [], ->
   .pipe to paths.exploded
 
 task 'build:ng-templates', [], ->
-  from paths.web + '/**/*.html'
+  jadeFilter = $.filter '**/*.jade'
+  from [
+    "#{ paths.web }/**/*.html"
+    "#{ paths.web }/**/*.jade"
+  ]
+  .pipe jadeFilter
+  .pipe $.jade pretty: true
+  .pipe do jadeFilter.restore
   .pipe ng.templates filename: 'templates.js', module: 'app.templates', standalone: true
   .pipe $.if args.compressed, $.uglify
   .pipe $.size title: 'ng-templates'
@@ -209,13 +217,16 @@ task 'serve', ['build'], ->
     notify: true
     open: false
   }
-  watch 'src/main/web/**/*.scss', ['compile:sass', reload]
-  watch 'src/main/web/i18n/*.json', ['build:statics-i18n', reload]
-  watch 'src/main/web/*.html', ['build:statics', reload]
-  watch 'src/main/web/**/*.html', ['build:ng-templates', reload]
-  watch 'src/main/web/**/*.js', ['build:ng-app', reload]
-  watch 'src/main/conf/*.yml', ['build:ng-conf', reload]
-  watch 'build/exploded/*.js', ['package:ng', reload]
+  watch "#{ paths.web }/**/*.scss", ['compile:sass', reload]
+  watch "#{ paths.web }/i18n/*.json", ['build:statics-i18n', reload]
+  watch "#{ paths.web }/*.html", ['build:statics', reload]
+  watch [
+    "#{ paths.web }/**/*.html"
+    "#{ paths.web }/**/*.jade"
+  ], ['build:ng-templates', reload]
+  watch "#{ paths.web }/**/*.js", ['build:ng-app', reload]
+  watch "#{ paths.conf }/*.yml", ['build:ng-conf', reload]
+  watch "#{ paths.exploded }/*.js", ['package:ng', reload]
 
 
 # final build task

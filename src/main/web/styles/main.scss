@@ -7,6 +7,10 @@ html, body {
   @include clear-margins;
 }
 
+p:last-child {
+  margin-bottom: 0;
+}
+
 .container {
   @include outer-container;
 }
