@@ -217,7 +217,10 @@ task 'serve', ['build'], ->
     notify: true
     open: false
   }
-  watch "#{ paths.web }/**/*.scss", ['compile:sass', reload]
+  watch [
+    "#{ paths.web }/**/*.scss"
+    "#{ paths.bower }/**/*.scss"
+  ], ['compile:sass', reload]
   watch "#{ paths.web }/i18n/*.json", ['build:statics-i18n', reload]
   watch "#{ paths.web }/*.html", ['build:statics', reload]
   watch [

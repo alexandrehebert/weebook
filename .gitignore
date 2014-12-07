@@ -26,7 +26,6 @@ tmp
 # see https://npmjs.org/doc/faq.html#Should-I-check-my-node_modules-folder-into-git
 node_modules
 bower_components
-!bower_components/bitters/app/assets/stylesheets/**/*.scss
 
 # Meta-datas
 .idea

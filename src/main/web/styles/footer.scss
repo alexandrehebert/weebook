@@ -33,8 +33,11 @@
   background: $footer-background;
   padding: $base-spacing - 0.5em;
   padding-bottom: $base-spacing + 1em;
+  margin: auto;
   margin-top: $base-spacing;
-  width: 100%;
+  width: $max-width;
+
+  @include border-bottom-radius(0.5em);
 
   .footer-logo {
     margin-right: 1em;

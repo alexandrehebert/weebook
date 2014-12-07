@@ -44,8 +44,8 @@
 
         <div class="nav">
             <ul id="navigation-menu">
-                <li class="nav-link"><a ui-sref="home" translate>weebook</a></li>
-                <li class="nav-link"><a href="">Products</a></li>
+                <li class="nav-link"><a href="#{{ 'home' | routeSegmentUrl }}" translate>weebook</a></li>
+                <li class="nav-link"><a href="#{{ 'error' | routeSegmentUrl }}">Error</a></li>
                 <li class="nav-link"><a href="">About Us</a></li>
                 <li class="nav-link"><a href="">Contact</a></li>
                 <li class="nav-link more"><a href="">More</a>
@@ -94,10 +94,7 @@
     </div>
 </section>
 <footer class="footer-2">
-    <div class="footer-logo">
-        <img src="https://raw.githubusercontent.com/thoughtbot/refills/master/source/images/placeholder_logo_1.png"
-             alt="Logo image" />
-    </div>
+
     <ul>
         <li><a href="">About</a></li>
         <li><a href="">Contact</a></li>

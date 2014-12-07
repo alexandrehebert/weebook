@@ -1,5 +1,12 @@
+
 @import "bourbon";
 @import "base";
+
+$grid-columns: 24;
+$max-width: em(1024);
+$blue: #999;
+$base-accent-color: #999;
+
 @import "neat";
 @import "font-awesome";
 @import "header";
