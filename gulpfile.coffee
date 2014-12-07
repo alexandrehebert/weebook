@@ -68,7 +68,6 @@ task 'compile:sass', [], ->
     errLogToConsole: args.debug
     includePaths: [
       paths.bower + '/bourbon/app/assets/stylesheets'
-      paths.bower + '/bitters/app/assets/stylesheets'
       paths.bower + '/neat/app/assets/stylesheets'
       paths.bower + '/fontawesome/scss'
       paths.web + '/**/*.scss'
@@ -219,7 +218,6 @@ task 'serve', ['build'], ->
   }
   watch [
     "#{ paths.web }/**/*.scss"
-    "#{ paths.bower }/**/*.scss"
   ], ['compile:sass', reload]
   watch "#{ paths.web }/i18n/*.json", ['build:statics-i18n', reload]
   watch "#{ paths.web }/*.html", ['build:statics', reload]
