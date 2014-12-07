@@ -5,16 +5,44 @@ angular.module('app.weebook',
         'app.conf',
         'app.templates',
         'pascalprecht.translate',
-        'ui.router'
+        'ngRoute', 'route-segment', 'view-segment'
     ]).
-    config(function ($translateProvider, $stateProvider, $urlRouterProvider, routes) {
+    config(function ($translateProvider, $routeProvider, $routeSegmentProvider, routes) {
+
+        $routeSegmentProvider.options.autoLoadTemplates = true;
+        $routeProvider.otherwise({redirectTo: '/'});
 
         // additionnal states found in routes configuration file
-        for (var routeName in routes) {
-            $stateProvider.state(routeName, routes[routeName]);
+        var rootDeep = -1;
+        var defaultRoutesDatas = {
+            untilResolved: {
+                templateUrl: 'components/loading/loading.html'
+            },
+            resolveFailed: {
+                templateUrl: 'error/error.html',
+                controller: 'HomeController'
+            }
+        };
+
+        function walkRoutes(_routes, parent, parentsUrl, parentsId) {
+            rootDeep++;
+            _.each(_routes, function (route, routeName) {
+                var routeId = !!parentsId ? parentsId + '.' + routeName : routeName;
+                var routeUrl = !!parentsUrl ? parentsUrl + route.url : route.url;
+                console.log(_.times(rootDeep, function () {
+                    return ' ';
+                }).join('') + routeName + '[' + routeId + '] : ' + routeUrl);
+                $routeSegmentProvider.when(routeUrl, routeId);
+                route = _.extend(route, defaultRoutesDatas);
+                parent.segment(routeName, route);
+                if (!!route['./']) {
+                    walkRoutes(route['./'], parent.within(routeName), routeUrl, routeName);
+                }
+            }, $routeSegmentProvider);
+            rootDeep--;
         }
-        $urlRouterProvider.when('', '/')
-            .otherwise('/404');
+
+        walkRoutes(routes, $routeSegmentProvider);
 
         // init ng-translate
         // $translateProvider.determinePreferredLanguage();
@@ -26,11 +54,6 @@ angular.module('app.weebook',
         $translateProvider.use('fr_FR');
 
     }).
-    run(function ($state, $rootScope) {
-
-        // default state & routes definition
-        $rootScope.$on('$stateChangeError', function () {
-            $state.go('404');
-        });
+    run(function () {
 
     });
