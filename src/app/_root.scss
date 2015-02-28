@@ -1,6 +1,17 @@
+
 @mixin clear-margins() {
   margin: 0;
   padding: 0;
+}
+
+@mixin center($width, $height) {
+  position: fixed;
+  width: $width;
+  height: $height;
+  top: 50%;
+  left: 50%;
+  margin-top: -($height / 2);
+  margin-left: -($width / 2);
 }
 
 html, body {
@@ -60,3 +71,5 @@ footer {
   margin-left: -$max-width/2;
   text-align: center;
 }
+
+@import "components/loading/loading";

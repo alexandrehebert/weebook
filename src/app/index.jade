@@ -8,31 +8,5 @@ html(ng-app='app.weebook')
         link(href='styles.css', rel='stylesheet', type='text/css')
         script(type='text/javascript', src='libs/vendors.js')
         script(type='text/javascript', src='app.final.js')
-        header
-            ul
-                li
-                    a(href="#{{'home' | routeSegmentUrl }}") Weebook
-                li
-                    a(href='') About Us
-                li
-                    a(href='') Contact
-                li.more
-                    a(href='') More
-        section.container(ng-controller='HomeController')
-            .large-column(app-view-segment='0')
-            .small-column
-                | small column
-        footer
-            ul
-                li
-                    a(href='') About
-                li
-                    a(href='') Contact
-                li
-                    a(href='') Products
-                li
-                    a(href='') Terms and Conditions
-                li
-                    a(href='') Privacy Policy
-                li
-                    a(href='') © Dij×DreaM
+    body
+        div(app-view-segment='0')

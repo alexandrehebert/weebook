@@ -1,0 +1,24 @@
+header
+    ul
+        li
+            a(href="#{{'root' | routeSegmentUrl }}", translate) weebook
+        li
+            a(href='#{{"root.somewhere" | routeSegmentUrl }}') Somewhere
+section.container
+    .large-column(app-view-segment=1)
+    .small-column
+        | small column
+footer
+    ul
+        li
+            a(href='') About
+        li
+            a(href='') Contact
+        li
+            a(href='') Products
+        li
+            a(href='') Terms and Conditions
+        li
+            a(href='') Privacy Policy
+        li
+            a(href='') © Dij×DreaM

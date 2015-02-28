@@ -1,52 +1,25 @@
 'use strict';
 
+//angular.module('app.boot', ['app.conf', 'translator'])
+//    .config(function ($translateProvider, translations) {
+//        $translateProvider.config({
+//            translationsUrl: '/i18n/',
+//            defaultTranslations: translations
+//        });
+//    })
+//    .run(function (translationsLoader) {
+//        translationsLoader.then(function () {
+//            angular.bootstrap(document.body, ['app.weebook']);
+//        });
+//    });
+
 angular.module('app.weebook',
     [
-        'app.conf',
-        'app.templates',
-        'translator',
-        'ngRoute', 'route-segment', 'view-segment'
+        'app.conf', 'app.templates', 'app.routes', 'translator'
     ])
+    .config(function ($translateProvider, $routesProvider, translations) {
 
-    .config(function ($routeProvider, $routeSegmentProvider, $translateProvider, routes, translations) {
-
-        $routeSegmentProvider.options.autoLoadTemplates = true;
-        $routeProvider.otherwise({redirectTo: '/'});
-
-        // additionnal states found in routes configuration file
-        var rootDeep = -1;
-        var defaultRoutesDatas = {
-            resolve: {
-                translations: 'translationsLoader'
-            },
-            untilResolved: {
-                templateUrl: 'components/loading/loading.html'
-            },
-            resolveFailed: {
-                templateUrl: 'error/error.html',
-                controller: 'HomeController'
-            }
-        };
-
-        function walkRoutes(_routes, parent, parentsUrl, parentsId) {
-            rootDeep++;
-            _.each(_routes, function (route, routeName) {
-                var routeId = !!parentsId ? parentsId + '.' + routeName : routeName;
-                var routeUrl = !!parentsUrl ? parentsUrl + route.url : route.url;
-                console.log(_.times(rootDeep, function () {
-                    return ' ';
-                }).join('') + routeName + '[' + routeId + '] : ' + routeUrl);
-                $routeSegmentProvider.when(routeUrl, routeId);
-                route = _.extend(route, defaultRoutesDatas);
-                parent.segment(routeName, route);
-                if (!!route['./']) {
-                    walkRoutes(route['./'], parent.within(routeName), routeUrl, routeName);
-                }
-            }, $routeSegmentProvider);
-            rootDeep--;
-        }
-
-        walkRoutes(routes, $routeSegmentProvider);
+        $routesProvider.walkRoutes({});
 
         $translateProvider.config({
             translationsUrl: '/i18n/',
@@ -54,9 +27,6 @@ angular.module('app.weebook',
         });
 
     })
-
     .run(function () {
-
-
 
     });

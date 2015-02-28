@@ -2,21 +2,32 @@ routes:
 
   # list of routes
 
-  home:
+  root:
     default: true
     url: /
-    templateUrl: home/home.html
-    controller: HomeController
+    templateUrl: root.html
     resolve:
-      translate: translationsLoader
+      translations: translationsLoader
 
-  error:
-    url: /error
-    templateUrl: error/error.html
-
-    './':
-      err404:
+    ./:
+      home:
         default: true
-        url: /404
-        templateUrl: error/error-404.html
+        url: home
+        templateUrl: home/home.html
         controller: HomeController
+
+      somewhere:
+        url: somewhere
+        templateUrl: somewhere/somewhere.html
+        controller: SomewhereController
+
+      error:
+        url: error
+        templateUrl: error/error.html
+
+        ./:
+          err404:
+            default: true
+            url: /404
+            templateUrl: error/error-404.html
+            controller: HomeController
