@@ -6,8 +6,9 @@ angular.module('app.weebook',
         'app.templates',
         'translator',
         'ngRoute', 'route-segment', 'view-segment'
-    ]).
-    config(function ($routeProvider, $routeSegmentProvider, routes) {
+    ])
+
+    .config(function ($routeProvider, $routeSegmentProvider, $translateProvider, routes, translations) {
 
         $routeSegmentProvider.options.autoLoadTemplates = true;
         $routeProvider.otherwise({redirectTo: '/'});
@@ -15,6 +16,9 @@ angular.module('app.weebook',
         // additionnal states found in routes configuration file
         var rootDeep = -1;
         var defaultRoutesDatas = {
+            resolve: {
+                translations: 'translationsLoader'
+            },
             untilResolved: {
                 templateUrl: 'components/loading/loading.html'
             },
@@ -44,7 +48,15 @@ angular.module('app.weebook',
 
         walkRoutes(routes, $routeSegmentProvider);
 
-    }).
-    run(function () {
+        $translateProvider.config({
+            translationsUrl: '/i18n/',
+            defaultTranslations: translations
+        });
+
+    })
+
+    .run(function () {
+
+
 
     });

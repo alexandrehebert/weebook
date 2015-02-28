@@ -37,6 +37,7 @@ paths =
   web: 'src/app'
   conf: 'src/conf'
   assets: 'src/assets'
+  i18n: 'src/i18n'
   build: 'build'
   exploded: 'build/exploded'
   test: 'test'
@@ -82,11 +83,15 @@ task 'compile:sass', [], ->
 
 # build tasks
 
-task 'build:statics-root-files', ->
+task 'build:statics-files', ->
   from [
     paths.web + '/*.ico'
   ]
   .pipe to paths.build
+  from [
+    paths.i18n + '/*-*.json'
+  ]
+  .pipe to paths.build + '/i18n/'
   from [
     paths.web + '/*.jade'
   ]
@@ -99,7 +104,7 @@ task 'build:statics-images', ->
   .pipe to paths.build + '/assets/images'
 
 task 'build:statics', (cb) ->
-  sequence ['build:statics-root-files', 'build:statics-images'], cb
+  sequence ['build:statics-files', 'build:statics-images'], cb
 
 
 task 'build:vendors', [], ->
@@ -113,11 +118,15 @@ task 'build:vendors', [], ->
   .pipe to paths.build + '/libs'
 
 task 'build:ng-conf', [], ->
+  ymlFilter = $.filter '**/*.yml'
   from [
-    "#{ paths.conf }/#{ args.env }.yml"
+    "#{ paths.i18n }/fr-fr.json"
+    "#{ paths.conf }/!(development|production).yml"
     "#{ paths.conf }/!(development|production).yml"
   ]
+  .pipe ymlFilter
   .pipe do $.yaml
+  .pipe do ymlFilter.restore
   .pipe $.extend 'conf.json'
   .pipe ng.configuration 'app.conf'
   .pipe $.rename basename: 'conf'

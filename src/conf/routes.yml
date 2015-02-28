@@ -7,12 +7,14 @@ routes:
     url: /
     templateUrl: home/home.html
     controller: HomeController
+    resolve:
+      translate: translationsLoader
 
   error:
     url: /error
     templateUrl: error/error.html
 
-    ./:
+    './':
       err404:
         default: true
         url: /404
