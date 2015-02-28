@@ -4,6 +4,7 @@ angular.module('app.weebook',
     [
         'app.conf',
         'app.templates',
+        'translator',
         'ngRoute', 'route-segment', 'view-segment'
     ]).
     config(function ($routeProvider, $routeSegmentProvider, routes) {

@@ -139,7 +139,11 @@ task 'build:ng-templates', [], ->
   .pipe to paths.exploded
 
 task 'build:ng-app', [], ->
-  from paths.web + '/**/*.js'
+  from [
+    "#{ paths.web }/components/translate/translator.js"
+    "#{ paths.web }/app.js"
+    "#{ paths.web }/**/*.js"
+  ]
   .pipe do ng.annotate
   .pipe $.concat 'app.js'
   .pipe $.if args.compressed, $.uglify
