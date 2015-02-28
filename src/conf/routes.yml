@@ -5,7 +5,7 @@ routes:
   root:
     default: true
     url: /
-    templateUrl: root.html
+    templateUrl: layout.html
     resolve:
       translations: translationsLoader
 

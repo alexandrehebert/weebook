@@ -64,6 +64,7 @@ header {
 footer {
   @include border-top-radius(4px);
   border: 1px solid $light-gray;
+  border-bottom: none;
   position: fixed;
   width: $max-width;
   bottom: 0;

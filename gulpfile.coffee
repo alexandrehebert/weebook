@@ -34,12 +34,12 @@ args =
   debug: $.util.env.debug?
 paths =
   bower: 'src/vendors/bower_components'
-  web: 'src/app'
+  web: 'src/front'
   conf: 'src/conf'
   assets: 'src/assets'
   i18n: 'src/i18n'
-  build: 'build'
-  exploded: 'build/exploded'
+  build: 'build/web/'
+  exploded: 'build/web/exploded'
   test: 'test'
 
 
@@ -203,7 +203,7 @@ task 'clean:before-build', (cb) ->
 task 'clean:after-build', ->
   rm paths.exploded if args.compressed
   #  rm [
-  #    paths.build + '/app.js'
+  #    paths.build + '/front.js'
   #    paths.build + '/templates.js'
   #    paths.build + '/conf.js'
   #  ], cb
@@ -219,23 +219,23 @@ task 'test', ['build'], (cb) ->
       'build/exploded/conf.js'
       'build/exploded/templates.js'
       'test/unit/**/*.js'
-      'src/app/*.js'
-      'src/app/**/*.js'
+      'src/front/*.js'
+      'src/front/**/*.js'
     ]),
     reporters: ['spec', 'junit', 'coverage']
     singleRun: true
   , cb
 
 task 'test:loop', ['build'], (done) ->
-  gulp.watch ['src/app/**/*.js'], ['build:ng-app']
+  gulp.watch ['src/front/**/*.js'], ['build:ng-app']
   karma.start
     configFile: __dirname + '/test/karma.conf.js',
     files: bowerFiles({includeDev: true, filter: /.+\.js/}).concat([
       'build/exploded/conf.js'
       'build/exploded/templates.js'
       'test/unit/**/*.js'
-      'src/app/*.js'
-      'src/app/**/*.js'
+      'src/front/*.js'
+      'src/front/**/*.js'
     ]),
     reporters: ['dots', 'junit', 'coverage']
     singleRun: true
