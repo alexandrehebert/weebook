@@ -4,10 +4,9 @@ angular.module('app.weebook',
     [
         'app.conf',
         'app.templates',
-        'pascalprecht.translate',
         'ngRoute', 'route-segment', 'view-segment'
     ]).
-    config(function ($translateProvider, $routeProvider, $routeSegmentProvider, routes) {
+    config(function ($routeProvider, $routeSegmentProvider, routes) {
 
         $routeSegmentProvider.options.autoLoadTemplates = true;
         $routeProvider.otherwise({redirectTo: '/'});
@@ -43,15 +42,6 @@ angular.module('app.weebook',
         }
 
         walkRoutes(routes, $routeSegmentProvider);
-
-        // init ng-translate
-        // $translateProvider.determinePreferredLanguage();
-        $translateProvider.useStaticFilesLoader({
-            prefix: '/i18n/',
-            suffix: '.json'
-        });
-
-        $translateProvider.use('fr_FR');
 
     }).
     run(function () {

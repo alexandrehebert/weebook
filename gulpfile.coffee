@@ -33,12 +33,13 @@ args =
   compressed: $.util.env.mode is 'production'
   debug: $.util.env.debug?
 paths =
-  bower: 'src/main/vendors/bower_components'
-  web: 'src/main/web'
-  conf: 'src/main/conf'
+  bower: 'src/vendors/bower_components'
+  web: 'src/app'
+  conf: 'src/conf'
+  assets: 'src/assets'
   build: 'build'
   exploded: 'build/exploded'
-  test: 'src/test'
+  test: 'test'
 
 
 # shortcuts / helpers
@@ -47,13 +48,13 @@ from = -> gulp.src arguments...
 to = -> gulp.dest arguments...
 watch = -> gulp.watch arguments...
 task = -> gulp.task arguments...
-log = $.util.log
+log = -> $.util.log arguments...
 
 
 # some prints
 
-log "Build in #{ args.env } mode."
-log 'Debug is ' + (if args.debug then 'enabled' else 'disabled') + '.'
+log 'Build in ' + $.util.colors.red(args.env) + ' mode.'
+log 'Debug is ' + $.util.colors.red(if args.debug then 'enabled' else 'disabled') + '.'
 log 'Paths are :\n', paths
 
 
@@ -69,10 +70,9 @@ task 'compile:sass', [], ->
     includePaths: [
       paths.bower + '/bourbon/app/assets/stylesheets'
       paths.bower + '/neat/app/assets/stylesheets'
-      paths.bower + '/fontawesome/scss'
       paths.web + '/**/*.scss'
     ]
-  .pipe $.sourcemaps.write debug: args.debug
+  .pipe $.if !args.compressed, -> $.sourcemaps.write debug: args.debug
   .pipe $.concat 'styles.css'
   .pipe $.if args.compressed, css.minify
   .pipe $.size title: 'styles'
@@ -82,21 +82,25 @@ task 'compile:sass', [], ->
 
 # build tasks
 
-task 'build:statics-i18n', ->
-  from [
-    paths.web + '/i18n/*.json'
-  ]
-  .pipe to paths.build + '/i18n/'
-
 task 'build:statics-root-files', ->
   from [
-    paths.web + '/*.html'
     paths.web + '/*.ico'
   ]
   .pipe to paths.build
+  from [
+    paths.web + '/*.jade'
+  ]
+  .pipe $.jade pretty: true
+  .pipe to paths.build
+
+task 'build:statics-images', ->
+  from "#{ paths.assets }/images/**/*"
+  .pipe $.size title: 'images'
+  .pipe to paths.build + '/assets/images'
 
 task 'build:statics', (cb) ->
-  sequence ['build:statics-i18n', 'build:statics-root-files'], cb
+  sequence ['build:statics-root-files', 'build:statics-images'], cb
+
 
 task 'build:vendors', [], ->
   vendorsFiles = do bowerFiles
@@ -175,7 +179,7 @@ task 'package:ng', [], ->
 
 task 'clean', ['clean:before-build'], (cb) ->
   rm [
-    '*.log'
+    '*.log', 'logs'
   ], cb
 
 task 'clean:before-build', (cb) ->
@@ -195,14 +199,34 @@ task 'clean:after-build', ->
 
 # tests tasks
 
-task 'test', [], (cb) ->
+task 'test', ['build'], (cb) ->
   karma.start
-    configFile: __dirname + '/src/test/karma.conf.coffee',
-    files: [
-
-    ],
+    configFile: __dirname + '/test/karma.conf.js',
+    files: bowerFiles({includeDev: true, filter: /.+\.js/}).concat([
+      'build/exploded/conf.js'
+      'build/exploded/templates.js'
+      'test/unit/**/*.js'
+      'src/app/*.js'
+      'src/app/**/*.js'
+    ]),
+    reporters: ['spec', 'junit', 'coverage']
     singleRun: true
   , cb
+
+task 'test:loop', ['build'], (done) ->
+  gulp.watch ['src/app/**/*.js'], ['build:ng-app']
+  karma.start
+    configFile: __dirname + '/test/karma.conf.js',
+    files: bowerFiles({includeDev: true, filter: /.+\.js/}).concat([
+      'build/exploded/conf.js'
+      'build/exploded/templates.js'
+      'test/unit/**/*.js'
+      'src/app/*.js'
+      'src/app/**/*.js'
+    ]),
+    reporters: ['dots', 'junit', 'coverage']
+    singleRun: true
+  , done
 
 
 # development tasks
@@ -219,8 +243,7 @@ task 'serve', ['build'], ->
   watch [
     "#{ paths.web }/**/*.scss"
   ], ['compile:sass', reload]
-  watch "#{ paths.web }/i18n/*.json", ['build:statics-i18n', reload]
-  watch "#{ paths.web }/*.html", ['build:statics', reload]
+  watch "#{ paths.web }/*.jade", ['build:statics', reload]
   watch [
     "#{ paths.web }/**/*.html"
     "#{ paths.web }/**/*.jade"
